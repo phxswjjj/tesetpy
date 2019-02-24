@@ -1,3 +1,11 @@
 .ipynb_checkpoints
 
+# python
+\__pycache__
+
+# vscode
+\.vs
+\.vscode
+
+# Custom
 \res
