@@ -8,13 +8,18 @@ class wnd:
     def __init__(self):
         self.hwnd = None
         self.rect = None
+        self.size = None
         self.image = None
         self.m = PyMouse()
         self.k = PyKeyboard()
 
     def load(self, wintitle):
         self.hwnd = win32gui.FindWindow(None, wintitle)
-        self.rect = win32gui.GetWindowRect(self.hwnd)
+        rect = win32gui.GetWindowRect(self.hwnd)
+        self.rect = rect
+
+        size = (rect[2] - rect[0], rect[3] - rect[1])
+        self.size = size
 
     def grab(self):
         self.focus()
