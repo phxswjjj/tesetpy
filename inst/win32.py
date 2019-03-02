@@ -14,8 +14,13 @@ class wnd:
         self.k = PyKeyboard()
 
     def load(self, wintitle):
-        self.hwnd = win32gui.FindWindow(None, wintitle)
-        rect = win32gui.GetWindowRect(self.hwnd)
+        hwnd = win32gui.FindWindow(None, wintitle)
+        self.hwnd = hwnd
+
+        # 最小化會無法取得 window rect
+        if(win32gui.IsIconic(hwnd)):
+            win32gui.ShowWindow(hwnd, win32con.SW_SHOWNORMAL)
+        rect = win32gui.GetWindowRect(hwnd)
         self.rect = rect
 
         size = (rect[2] - rect[0], rect[3] - rect[1])
@@ -50,3 +55,10 @@ class wnd:
 
     def tap(self, c, n = 1):
         self.k.tap_key(c, n)
+
+    def minimize(self):
+        hwnd = self.hwnd
+
+        if(win32gui.GetForegroundWindow() == hwnd):
+            if(not win32gui.IsIconic(hwnd)):
+                win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
