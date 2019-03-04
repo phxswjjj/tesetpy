@@ -6,6 +6,10 @@ class WarFightMode:
     MEDIUM = 1
     HARD = 2
 
+class WarProduceMode:
+    EASY = 0
+    HARD = 1
+
 class wnd(wnd32):
     __defaultsize = (1606, 925)
 
@@ -26,11 +30,22 @@ class wnd(wnd32):
         ry = int(round(ry * sizeratio[1]))
         super().click(rx, ry, button, n)
 
-    def warProduce(self):
-        rx, ry = (420, 320)
+    def warProduce(self, mode=WarProduceMode.EASY):
+        # submit & select
+        rx, ry = (420 + mode*340, 320)
+        self.click_l(rx, ry)
+        time.sleep(0.3)
+        self.click_l(rx, ry)
+        time.sleep(0.3)
         self.click_l(rx, ry)
 
-        time.sleep(1)
+        # resource
+        time.sleep(0.5)
+        rx, ry = (650, 613)
+        self.click_l(rx, ry)
+
+        # produce
+        time.sleep(0.5)
         rx, ry = (1100, 750)
         self.click_l(rx, ry)
 
@@ -38,8 +53,14 @@ class wnd(wnd32):
         # posSeq: 0~5
         rx, ry = (1100 + posSeq*90, 850)
         self.click_l(rx, ry)
-        time.sleep(1)
+        time.sleep(0.5)
         self.__warUpgradeCancel()
+
+        '''避免誤使用鑽石執行
+        time.sleep(0.5)
+        rx, ry = 940, 700
+        self.click_l(rx, ry)
+        '''
     
     def __warUpgradeCancel(self):
         rx, ry = (700, 790)

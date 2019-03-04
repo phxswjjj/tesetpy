@@ -14,6 +14,9 @@ class wnd:
         self.k = PyKeyboard()
 
     def load(self, wintitle):
+        '''
+        find window by title, calculate window rect and size
+        '''
         hwnd = win32gui.FindWindow(None, wintitle)
         self.hwnd = hwnd
 
@@ -27,12 +30,18 @@ class wnd:
         self.size = size
 
     def grab(self):
+        '''
+        take a screenshot of window
+        '''
         self.focus()
 
         rect = self.rect
         self.image = ImageGrab.grab(rect)
 
     def focus(self):
+        '''
+        bring a window foreground
+        '''
         hwnd = self.hwnd
 
         if(win32gui.GetForegroundWindow() != hwnd):
