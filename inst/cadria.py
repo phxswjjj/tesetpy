@@ -30,6 +30,11 @@ class wnd(wnd32):
         ry = int(round(ry * sizeratio[1]))
         super().click(rx, ry, button, n)
 
+    def warEnter(self):
+        rx, ry = (440, 750)
+        self.click_l(rx, ry)
+        time.sleep(2)
+
     def warProduce(self, mode=WarProduceMode.EASY):
         # submit & select
         rx, ry = (420 + mode*340, 320)
@@ -80,7 +85,7 @@ class wnd(wnd32):
     def warFightCompleted(self):
         rx, ry = (590, 490)
         self.click_l(rx, ry)
-        time.sleep(0.5)
+        time.sleep(1)
 
         self.tap('g')
         time.sleep(0.5)
