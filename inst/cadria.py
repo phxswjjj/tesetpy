@@ -85,10 +85,10 @@ class wnd(wnd32):
     def warFightCompleted(self):
         rx, ry = (590, 490)
         self.click_l(rx, ry)
-        time.sleep(1)
+        time.sleep(2)
 
         self.tap('g')
-        time.sleep(0.5)
+        time.sleep(1)
         rx, ry = (940, 710)
         self.click_l(rx, ry)
         
