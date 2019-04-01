@@ -58,7 +58,7 @@ class wnd(wnd32):
         # posSeq: 0~5
         rx, ry = (1100 + posSeq*90, 850)
         self.click_l(rx, ry)
-        time.sleep(0.5)
+        time.sleep(1.5)
         self.__warUpgradeCancel()
 
         '''避免誤使用鑽石執行
@@ -87,6 +87,8 @@ class wnd(wnd32):
         self.click_l(rx, ry)
         time.sleep(2)
 
+        self.tap('g')
+        time.sleep(1)
         self.tap('g')
         time.sleep(1)
         rx, ry = (940, 710)
