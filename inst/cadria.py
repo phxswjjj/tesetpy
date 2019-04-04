@@ -87,9 +87,7 @@ class wnd(wnd32):
         self.click_l(rx, ry)
         time.sleep(2)
 
-        self.tap('g')
-        time.sleep(1)
-        self.tap('g')
+        self.tap('f')
         time.sleep(1)
         rx, ry = (940, 710)
         self.click_l(rx, ry)
