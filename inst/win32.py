@@ -50,6 +50,9 @@ class wrect:
         else:
             return super().__eq__(other)
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __str__(self):
         return '({}, {}, {}, {})'.format(self.left, self.top, self.right, self.bottom)
 
@@ -97,6 +100,9 @@ class wsize:
             return (self.width, self.height) == other
         else:
             return super().__eq__(other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __str__(self):
         return '({}, {})'.format(self.width, self.height)
