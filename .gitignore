@@ -1,11 +1,12 @@
-.ipynb_checkpoints
+.ipynb_checkpoints/
+.mypy_cache/
 
 # python
-\__pycache__
+__pycache__/
 
 # vscode
-\.vs
-\.vscode
+.vs/
+.vscode/
 
 # Custom
-\res
+res/
