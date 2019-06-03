@@ -5,14 +5,43 @@ from PIL import ImageGrab
 from pykeyboard import PyKeyboard
 from pymouse import PyMouse
 
-from .types import Position
+
+class wpos:
+    """座標位置(x, y)"""
+
+    def __init__(self, *args, **kwargs):
+        """
+        :param args: x, y
+        :param kwargs: x, y
+        """
+        self.x = 0
+        self.y = 0
+
+        if args and len(args) != 2:
+            raise ValueError('len of *args must 2')
+        elif len(args) == 2:
+            self.x, self.y = args
+        else:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+
+    def __eq__(self, other):
+        if isinstance(other, tuple):
+            return (self.x, self.y) == other
+        elif isinstance(other, wpos):
+            return (self.x, self.y) == (other.x, other.y)
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class wrect:
     def __init__(self, *args, **kwargs):
         '''
         :param args: (left: int, top: int, right: int, bottom: int)
-        :param kwargs: pos1=(left: int, top: int) or Position, pos2=(right: int, bottom: int) or Position
+        :param kwargs: pos1=(left: int, top: int), pos2=(right: int, bottom: int)
         '''
         self.left = 0
         self.top = 0
@@ -26,15 +55,9 @@ class wrect:
         else:
             for key, value in kwargs.items():
                 if key == 'pos1':
-                    if isinstance(value, Position):
-                        self.left, self.top = value.x, value.y
-                    else:
-                        self.left, self.top = value
+                    self.left, self.top = value
                 elif key == 'pos2':
-                    if isinstance(value, Position):
-                        self.right, self.bottom = value.x, value.y
-                    else:
-                        self.right, self.bottom = value
+                    self.right, self.bottom = value
                 else:
                     setattr(self, key, value)
 
@@ -47,6 +70,8 @@ class wrect:
     def __eq__(self, other):
         if isinstance(other, tuple):
             return (self.left, self.top, self.right, self.bottom) == other
+        elif isinstance(other, wrect):
+            return (self.left, self.top, self.right, self.bottom) == (other.left, other.top, other.right, other.bottom)
         else:
             return super().__eq__(other)
 
@@ -59,32 +84,55 @@ class wrect:
 
 class wsize:
     def __init__(self, *args, **kwargs):
+        """
+        :param args:
+            width, height
+            left, top, right, bottom
+            (x1, y1), (x2, y2)
+        :param kwargs:
+            width,
+            height,
+            size=(width, height),
+            pos1=(x1, y1) or wpos,
+            pos2=(x2, y2) or wpos
+        """
         self.width = 0
         self.height = 0
 
         if len(args) != 0 and len(args) != 2 and len(args) != 4:
             raise ValueError('len of *args must 2 or 4')
         elif len(args) == 2:
-            self.width, self.height = args
+            p1, p2 = args
+            if isinstance(p1, tuple) and len(p1) != 2:
+                raise ValueError('must tuple[int, int]: {}'.format(p1))
+            elif isinstance(p2, tuple) and len(p2) != 2:
+                raise ValueError('must tuple[int, int]: {}'.format(p2))
+            elif isinstance(p1, tuple) and isinstance(p2, tuple):
+                x1, y1 = p1
+                x2, y2 = p2
+                self.width, self.height = abs(x2 - x1), abs(y2 - y1)
+            else:
+                self.width, self.height = args
         elif len(args) == 4:
             # args=(left, top, right, bottom)
-            self.width, self.height = args[2] - args[0], args[3] - args[1]
+            self.width, self.height = abs(
+                args[2] - args[0]), abs(args[3] - args[1])
         else:
-            pos1: Position = None
-            pos2: Position = None
+            pos1: wpos = None
+            pos2: wpos = None
             for key, value in kwargs.items():
                 if key == 'size':
                     self.width, self.height = value
                 elif key == 'pos1':
-                    if isinstance(value, Position):
+                    if isinstance(value, wpos):
                         pos1 = value
                     else:
-                        pos1 = Position(*value)
+                        pos1 = wpos(*value)
                 elif key == 'pos2':
-                    if isinstance(value, Position):
+                    if isinstance(value, wpos):
                         pos2 = value
                     else:
-                        pos2 = Position(*value)
+                        pos2 = wpos(*value)
                 else:
                     setattr(self, key, value)
             if pos1 == None and pos2 == None:
@@ -95,9 +143,14 @@ class wsize:
                 self.width = abs(pos1.x - pos2.x)
                 self.height = abs(pos1.y - pos2.y)
 
+        if self.width < 0 or self.height < 0:
+            raise ValueError('width or height must >= 0')
+
     def __eq__(self, other):
         if isinstance(other, tuple):
             return (self.width, self.height) == other
+        elif isinstance(other, wsize):
+            return (self.width, self.height) == (other.width, other.height)
         else:
             return super().__eq__(other)
 
@@ -106,6 +159,77 @@ class wsize:
 
     def __str__(self):
         return '({}, {})'.format(self.width, self.height)
+
+
+class wcolor:
+    """
+    顏色定義方式:
+    #00FF00 -> 0, 255, 0
+    #0F0 -> #00FF00 -> 0, 255, 0
+    0, 255, 0
+    """
+    _HEXSTR: str = '0123456789ABCDEF'
+
+    def __init__(self, *args, **kwargs):
+        """
+        :param args:
+            '#00FF00'
+            '#0F0'
+            0, 255, 0
+        :param kwargs: r, g, b
+        """
+        self.r = 0
+        self.g = 0
+        self.b = 0
+
+        if args:
+            s, *_ = args
+            if isinstance(s, str):
+                if not s.startswith('#'):
+                    raise ValueError('args is str and must startwith "#"')
+                elif len(s) != 4 and len(s) != 7:
+                    raise ValueError('args is str and must #fff or #ffffff')
+                elif len(s) == 4:
+                    s = s.upper()[1:]
+                    nlist = [self._HEXSTR.index(s1) for s1 in s]
+                    self.r, self.g, self.b = [16 * n + n for n in nlist]
+                elif len(s) == 7:
+                    s = s.upper()[1:]
+                    nlist = [self._HEXSTR.index(s1) for s1 in s]
+                    self.r, self.g, self.b = [
+                        nlist[2 * i] * 16 + nlist[2 * i + 1] for i in range(3)]
+            elif len(args) != 3:
+                raise ValueError('len of args must 3')
+            else:
+                for i in args:
+                    if not isinstance(i, int):
+                        raise ValueError('args must [int, int, int]')
+                self.r, self.g, self.b = args
+        else:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+
+        if self.r < 0 or self.g < 0 or self.b < 0:
+            raise ValueError('r/g/b must >= 0')
+        elif self.r > 255 or self.g > 255 or self.b > 255:
+            raise ValueError('r/g/b must <= 255')
+
+    def __eq__(self, other):
+        if isinstance(other, tuple):
+            return (self.r, self.g, self.b) == other
+        elif isinstance(other, wcolor):
+            return (self.r, self.g, self.b) == (other.r, other.g, other.b)
+        elif isinstance(other, str):
+            try:
+                o = wcolor(other)
+                return (self.r, self.g, self.b) == (o.r, o.g, o.b)
+            except:
+                return False
+        else:
+            return super().__eq__(other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class wnd:
