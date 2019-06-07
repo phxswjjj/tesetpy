@@ -1,4 +1,5 @@
 """定義通用類型: Position, Rectangle"""
+from abc import ABCMeta, abstractmethod
 
 
 class Position:
@@ -60,3 +61,20 @@ class Rectangle:
 
     def __str__(self):
         return '{}, {}, width={}, height={}'.format(self.pos1, self.pos2, self.width, self.height)
+
+
+class ITuple(metaclass=ABCMeta):
+    @abstractmethod
+    def totup(self):
+        pass
+
+    def __eq__(self, other):
+        if isinstance(other, ITuple):
+            return self.totup() == other.totup()
+        elif isinstance(other, tuple):
+            return self.totup() == other
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

@@ -1,12 +1,13 @@
-import win32gui
 import win32con
 import win32gui
 from PIL import ImageGrab
 from pykeyboard import PyKeyboard
 from pymouse import PyMouse
 
+from .types import ITuple
 
-class wpos:
+
+class wpos(ITuple):
     """座標位置(x, y)"""
 
     def __init__(self, *args, **kwargs):
@@ -25,19 +26,11 @@ class wpos:
             for key, value in kwargs.items():
                 setattr(self, key, value)
 
-    def __eq__(self, other):
-        if isinstance(other, tuple):
-            return (self.x, self.y) == other
-        elif isinstance(other, wpos):
-            return (self.x, self.y) == (other.x, other.y)
-        else:
-            return False
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    def totup(self):
+        return (self.x, self.y)
 
 
-class wrect:
+class wrect(ITuple):
     def __init__(self, *args, **kwargs):
         '''
         :param args: (left: int, top: int, right: int, bottom: int)
@@ -67,22 +60,14 @@ class wrect:
         if self.bottom > self.top:
             self.top, self.bottom = self.bottom, self.top
 
-    def __eq__(self, other):
-        if isinstance(other, tuple):
-            return (self.left, self.top, self.right, self.bottom) == other
-        elif isinstance(other, wrect):
-            return (self.left, self.top, self.right, self.bottom) == (other.left, other.top, other.right, other.bottom)
-        else:
-            return super().__eq__(other)
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    def totup(self):
+        return (self.left, self.top, self.right, self.bottom)
 
     def __str__(self):
         return '({}, {}, {}, {})'.format(self.left, self.top, self.right, self.bottom)
 
 
-class wsize:
+class wsize(ITuple):
     def __init__(self, *args, **kwargs):
         """
         :param args:
@@ -146,22 +131,14 @@ class wsize:
         if self.width < 0 or self.height < 0:
             raise ValueError('width or height must >= 0')
 
-    def __eq__(self, other):
-        if isinstance(other, tuple):
-            return (self.width, self.height) == other
-        elif isinstance(other, wsize):
-            return (self.width, self.height) == (other.width, other.height)
-        else:
-            return super().__eq__(other)
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    def totup(self):
+        return (self.width, self.height)
 
     def __str__(self):
         return '({}, {})'.format(self.width, self.height)
 
 
-class wcolor:
+class wcolor(ITuple):
     """
     顏色定義方式:
     #00FF00 -> 0, 255, 0
@@ -214,22 +191,18 @@ class wcolor:
         elif self.r > 255 or self.g > 255 or self.b > 255:
             raise ValueError('r/g/b must <= 255')
 
+    def totup(self):
+        return (self.r, self.g, self.b)
+
     def __eq__(self, other):
-        if isinstance(other, tuple):
-            return (self.r, self.g, self.b) == other
-        elif isinstance(other, wcolor):
-            return (self.r, self.g, self.b) == (other.r, other.g, other.b)
-        elif isinstance(other, str):
+        if isinstance(other, str):
             try:
                 o = wcolor(other)
-                return (self.r, self.g, self.b) == (o.r, o.g, o.b)
+                return self == o
             except:
                 return False
         else:
             return super().__eq__(other)
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
 
 
 class wnd:
