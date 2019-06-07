@@ -1,5 +1,4 @@
-from .win32 import wpos, wrect, wsize, wcolor, wnd
-from .types import Position
+from inst.win32 import wpos, wrect, wsize, wcolor, wnd
 
 
 def test_wpos():
@@ -26,7 +25,7 @@ def test_rect():
 
     wr = wrect(pos1=(1, 2), pos2=(3, 4))
     assert wr == (1, 4, 3, 2)
-    
+
     # 比較
     assert wr != (0, 4, 3, 2)
     assert wrect(1, 2, 3, 4) == wrect(1, 2, 3, 4)
@@ -70,6 +69,7 @@ def test_wsize():
     assert ws != (1, 2)
     assert wsize(1, 2) == wsize(1, 2)
     assert wsize(1, 2) != wsize(2, 1)
+
 
 def test_color():
     wc = wcolor('#0f0')
