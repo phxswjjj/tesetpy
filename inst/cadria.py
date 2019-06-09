@@ -107,18 +107,16 @@ class wnd(wnd32):
         self.click_l(rx, ry)
 
     def match(self, s: SceneBase) -> bool:
+        """全部特徵都滿足才算符合"""
         rules: [FeatureRule] = s.feature_rules()
         if not rules:
             return False
 
         for rule in rules:
             rule: FeatureRule
-            p, c = rule.pos, rule.color
-            fc = self.get_pixel_color(p)
-            
-            if not fc.similar(c, diff=5):
+            if not rule.match(self.image):
                 return False
-            
+
         return True
 
     def identify_scene(self):
@@ -131,10 +129,10 @@ class wnd(wnd32):
         for scene in SceneBase.__subclasses__():
             scene: SceneBase
             s = scene()
-            # print(s.__class__.__name__)
+
             if self.match(s):
                 self._cur_scene = s
-        
+
         return scene_org and scene_org.__class__.__name__ == s.__class__.__name__
 
     @property
