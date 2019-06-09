@@ -4,27 +4,22 @@ from ..win32 import wcolor, wpos
 
 
 class FeatureRule:
-    def __init__(self, *args, **kwargs):
-        self.pos: wpos = None
-        self.color: wcolor = None
+    """
+    場景特徵
+    pos: wpos
+    color: wcolor
+    """
 
-
-class WindowBase(metaclass=ABCMeta):
-    pass
+    def __init__(self, *args):
+        """
+        :param args:
+        x, y, 'color'
+        """
+        self.pos: wpos = wpos(*args[:2])
+        self.color: wcolor = wcolor(*args[2:])
 
 
 class SceneBase(metaclass=ABCMeta):
-    def __init__(self):
-        pass
-
-    def match(self, w: WindowBase):
-        if len(self.feature_rules) == 0:
-            return False
-
-        for rule in self.feature_rules:
-            rule: FeatureRule
-            return NotImplemented
-
     @abstractmethod
-    def feature_rules(self):
+    def feature_rules(self) -> [FeatureRule]:
         return NotImplemented

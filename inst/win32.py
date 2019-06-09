@@ -23,7 +23,7 @@ class wpos(ITuple):
         self.y = 0
 
         if args and len(args) != 2:
-            raise ValueError('len of *args must 2')
+            raise ValueError('len of {} must 2'.format(args))
         elif len(args) == 2:
             self.x, self.y = args
         else:
@@ -262,6 +262,25 @@ class wcolor(ITuple):
         elif self.r > 255 or self.g > 255 or self.b > 255:
             raise ValueError('r/g/b must <= 255')
 
+    def similar(self, *args, diff=0) -> bool:
+        t: tuple
+        if len(args) == 1:
+            other = args[0]
+            if isinstance(other, ITuple):
+                t = other.totup()
+            else:
+                wc = wcolor(other)
+                t = wc.totup()
+        elif len(args) == 3:
+            t = args
+        else:
+            raise ValueError('{} type is not support'.format(args))
+
+        for i, v in enumerate(self.totup()):
+            if abs(t[i] - v) > diff:
+                return False
+        return True
+
     def totup(self):
         return (self.r, self.g, self.b)
 
@@ -327,14 +346,35 @@ class wnd:
         size = (rect[2] - rect[0], rect[3] - rect[1])
         self.size = size
 
-    def grab(self):
+    def grab(self, bbox=None):
         '''
         take a screenshot of window
         '''
         self.focus()
 
-        rect = self.rect
+        if bbox:
+            rect = bbox
+        else:
+            rect = self.rect
+        
         self.image = ImageGrab.grab(rect)
+        return self.image
+
+    def get_pixel_color(self, *args, image=None) -> wcolor:
+        p: wpos = None
+        if len(args) == 1 and isinstance(args[0], wpos):
+            p = args[0]
+        else:
+            p = wpos(*args)
+
+        if image:
+            im = image
+        else:
+            if not self.image:
+                self.grab()
+            im = self.image
+        
+        return wcolor(*im.getpixel(p.totup()))
 
     def focus(self):
         '''

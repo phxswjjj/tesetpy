@@ -1,14 +1,19 @@
-from .win32 import wnd as wnd32
 import time
+
+from .scene import SceneBase, FeatureRule
+from .win32 import wnd as wnd32
+
 
 class WarFightMode:
     EASY = 0
     MEDIUM = 1
     HARD = 2
 
+
 class WarProduceMode:
     EASY = 0
     HARD = 1
+
 
 class wnd(wnd32):
     __defaultsize = (1606, 925)
@@ -16,15 +21,19 @@ class wnd(wnd32):
     def __init__(self):
         super().__init__()
         self.sizeratio = (1, 1)
+        self._cur_scene: SceneBase = None
 
     def load(self):
         super().load('Cadria Item Shop')
+        if not self.hwnd:
+            return False
 
         defaultsize = wnd.__defaultsize
         size = self.size
         self.sizeratio = (size[0] / defaultsize[0], size[1] / defaultsize[1])
+        return True
 
-    def click(self, rx, ry, button = 1, n = 1):
+    def click(self, rx, ry, button=1, n=1):
         sizeratio = self.sizeratio
         rx = int(round(rx * sizeratio[0]))
         ry = int(round(ry * sizeratio[1]))
@@ -66,7 +75,7 @@ class wnd(wnd32):
         rx, ry = 940, 700
         self.click_l(rx, ry)
         '''
-    
+
     def __warUpgradeCancel(self):
         rx, ry = (700, 790)
         self.click_l(rx, ry)
@@ -91,8 +100,43 @@ class wnd(wnd32):
         time.sleep(1)
         rx, ry = (940, 710)
         self.click_l(rx, ry)
-        
+
         time.sleep(2)
-        
+
         rx, ry = (1430, 140)
         self.click_l(rx, ry)
+
+    def match(self, s: SceneBase) -> bool:
+        rules: [FeatureRule] = s.feature_rules()
+        if not rules:
+            return False
+
+        for rule in rules:
+            rule: FeatureRule
+            p, c = rule.pos, rule.color
+            fc = self.get_pixel_color(p)
+            
+            if not fc.similar(c, diff=5):
+                return False
+            
+        return True
+
+    def identify_scene(self):
+        self.focus()
+
+        scene_org = self.cur_scene
+        self._cur_scene = None
+
+        self.grab()
+        for scene in SceneBase.__subclasses__():
+            scene: SceneBase
+            s = scene()
+            # print(s.__class__.__name__)
+            if self.match(s):
+                self._cur_scene = s
+        
+        return scene_org and scene_org.__class__.__name__ == s.__class__.__name__
+
+    @property
+    def cur_scene(self):
+        return self._cur_scene
