@@ -1,3 +1,5 @@
+import collections
+
 import win32con
 import win32gui
 from PIL import ImageGrab
@@ -6,6 +8,8 @@ from pymouse import PyMouse
 
 from .types import ITuple
 
+def _itr_to_tup(itr: collections.Iterable, mul: int):
+    return tuple(mul * i for i in itr)
 
 class wpos(ITuple):
     """座標位置(x, y)"""
@@ -25,6 +29,25 @@ class wpos(ITuple):
         else:
             for key, value in kwargs.items():
                 setattr(self, key, value)
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            return wpos(self.x + other, self.y + other)
+        elif isinstance(other, wpos):
+            return wpos(self.x + other.x, self.y + other.y)
+        elif isinstance(other, tuple):
+            if len(other) == 2:
+                return self + wpos(*other)
+            else:
+                raise ValueError('len of {} must 2'.format(other))
+        else:
+            raise ValueError('{} type not support'.format(type(other)))
+
+    def __sub__(self, other):
+        if isinstance(other, collections.Iterable):
+            return self.__add__(tuple(-1 * i for i in other))
+        else:
+            return self.__add__(-1 * other)
 
     def totup(self):
         return (self.x, self.y)
@@ -62,6 +85,29 @@ class wrect(ITuple):
 
     def totup(self):
         return (self.left, self.top, self.right, self.bottom)
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            return wrect(*(i + other for i in self.totup()))
+        elif isinstance(other, tuple):
+            if len(other) == 2:
+                o = other * 2
+            elif len(other) == 4:
+                o = other
+            else:
+                raise ValueError('len of {} must 2 or 4'.format(other))
+            a = []
+            for i, v in enumerate(self.totup()):
+                a.append(o[i] + v)
+            return wrect(*a)
+        else:
+            raise ValueError('{} type not support'.format(type(other)))
+
+    def __sub__(self, other):
+        if isinstance(other, collections.Iterable):
+            return self.__add__(tuple(-1 * i for i in other))
+        else:
+            return self.__add__(-1 * other)
 
     def __str__(self):
         return '({}, {}, {}, {})'.format(self.left, self.top, self.right, self.bottom)
@@ -134,6 +180,31 @@ class wsize(ITuple):
     def totup(self):
         return (self.width, self.height)
 
+    def __add__(self, other):
+        if isinstance(other, int):
+            return wsize(*(i + other for i in self.totup()))
+        elif isinstance(other, tuple):
+            if len(other) == 2:
+                o = other
+            else:
+                raise ValueError('len of {} must 2'.format(other))
+            a = []
+            for i, v in enumerate(self.totup()):
+                a.append(o[i] + v)
+            return wsize(*a)
+        elif isinstance(other, wsize):
+            return self.__add__(other.totup())
+        else:
+            raise ValueError('{} type not support'.format(type(other)))
+
+    def __sub__(self, other):
+        if isinstance(other, collections.Iterable):
+            return self.__add__(_itr_to_tup(other, -1))
+        elif isinstance(other, wsize):
+            return self.__add__(_itr_to_tup(other.totup(), -1))
+        else:
+            return self.__add__(-1 * other)
+
     def __str__(self):
         return '({}, {})'.format(self.width, self.height)
 
@@ -194,6 +265,27 @@ class wcolor(ITuple):
     def totup(self):
         return (self.r, self.g, self.b)
 
+    def __add__(self, other):
+        if isinstance(other, int):
+            return wcolor(*(i + other for i in self.totup()))
+        elif isinstance(other, tuple):
+            if len(other) == 3:
+                o = other
+            else:
+                raise ValueError('len of {} must 3'.format(other))
+            a = []
+            for i, v in enumerate(self.totup()):
+                a.append(o[i] + v)
+            return wcolor(*a)
+        else:
+            raise ValueError('{} type not support'.format(type(other)))
+
+    def __sub__(self, other):
+        if isinstance(other, collections.Iterable):
+            return self.__add__(tuple(-1 * i for i in other))
+        else:
+            return self.__add__(-1 * other)
+
     def __eq__(self, other):
         if isinstance(other, str):
             try:
@@ -203,6 +295,9 @@ class wcolor(ITuple):
                 return False
         else:
             return super().__eq__(other)
+
+    def __str__(self):
+        return '{}'.format(self.totup())
 
 
 class wnd:
