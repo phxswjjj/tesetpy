@@ -3,6 +3,7 @@ import time
 import keyboard
 
 from .cadria import wnd
+from .scene.pub import Pub
 from .scene.shop import Shop
 from .task import task_war
 
@@ -23,8 +24,6 @@ def main():
 
     while True:
         if w.identify_scene():
-            print(w.cur_scene.__class__.__name__)
-        else:
             print(w.cur_scene.__class__.__name__)
         time.sleep(2)
 

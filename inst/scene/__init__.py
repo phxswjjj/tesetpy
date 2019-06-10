@@ -26,6 +26,14 @@ class FeatureRule:
             FeatureRule._res[filename] = img
 
     def match(self, img) -> bool:
+        """符合特徵
+
+        Arguments:
+            img {array or image} -- 來源圖(screen)
+
+        Returns:
+            bool
+        """
         screen_image: Iterable
         if isinstance(img, Iterable):
             screen_image = img
@@ -36,8 +44,8 @@ class FeatureRule:
         result = cv2.matchTemplate(
             screen_image, find_image, cv2.TM_CCOEFF_NORMED)
         threshold = 0.9
-        loc = np.where(result >= threshold)
-        if loc and loc[0]:
+        loc1, loc2 = np.where(result >= threshold)
+        if len(loc1) > 0:
             return True
         else:
             return False

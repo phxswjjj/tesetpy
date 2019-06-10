@@ -119,7 +119,12 @@ class wnd(wnd32):
 
         return True
 
-    def identify_scene(self):
+    def identify_scene(self) -> bool:
+        """辨識場景
+        
+        Returns:
+            [bool] -- true=場景變換
+        """
         self.focus()
 
         scene_org = self.cur_scene
@@ -132,8 +137,9 @@ class wnd(wnd32):
 
             if self.match(s):
                 self._cur_scene = s
-
-        return scene_org and scene_org.__class__.__name__ == s.__class__.__name__
+        if not scene_org and not self.cur_scene:
+            return False
+        return not scene_org or not self.cur_scene or scene_org.__class__.__name__ != s.__class__.__name__
 
     @property
     def cur_scene(self):
