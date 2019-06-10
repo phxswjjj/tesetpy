@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from collections import Iterable
 from os import path as opath
 
 import cv2
@@ -25,7 +26,11 @@ class FeatureRule:
             FeatureRule._res[filename] = img
 
     def match(self, img) -> bool:
-        screen_image = cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
+        screen_image: Iterable
+        if isinstance(img, Iterable):
+            screen_image = img
+        else:
+            screen_image = cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
         find_image = self.image
 
         result = cv2.matchTemplate(
