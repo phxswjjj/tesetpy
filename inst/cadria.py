@@ -131,15 +131,16 @@ class wnd(wnd32):
         self._cur_scene = None
 
         self.grab()
-        for scene in SceneBase.__subclasses__():
+        for scene in SceneBase.all_subclasses():
             scene: SceneBase
             s = scene()
 
             if self.match(s):
                 self._cur_scene = s
+                break
         if not scene_org and not self.cur_scene:
             return False
-        return not scene_org or not self.cur_scene or scene_org.__class__.__name__ != s.__class__.__name__
+        return not scene_org or not self.cur_scene or scene_org.__class__.__name__ != self._cur_scene.__class__.__name__
 
     @property
     def cur_scene(self):

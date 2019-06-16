@@ -63,3 +63,14 @@ class SceneBase(metaclass=ABCMeta):
     @abstractmethod
     def feature_rules(self) -> [FeatureRule]:
         return NotImplemented
+
+    @classmethod
+    def all_subclasses(cls):
+        subclasses: [SceneBase] = []
+        for c in cls.__subclasses__():
+            c_subclasses = c.all_subclasses()
+            if len(c_subclasses) == 0:
+                subclasses.append(c)
+            else:
+                subclasses.extend(c_subclasses)
+        return subclasses

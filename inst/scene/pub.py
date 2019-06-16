@@ -3,6 +3,7 @@ from . import SceneBase, FeatureRule
 
 class Pub(SceneBase):
     """酒館"""
+
     def feature_rules(self) -> [FeatureRule]:
         rules: [FeatureRule] = []
         # 左下角秘境
@@ -10,5 +11,5 @@ class Pub(SceneBase):
 
         # 右下角店舖
         rules.append(FeatureRule('shop_icon.jpg'))
-        
+
         return rules
