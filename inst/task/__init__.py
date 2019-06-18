@@ -1,5 +1,21 @@
 from abc import ABCMeta, abstractmethod
-from .. import cadria
+
+from ..scene import FeatureRule, SceneBase
+
+
+class TaskWnd(metaclass=ABCMeta):
+    @abstractmethod
+    def is_scene(self, cls: SceneBase) -> bool:
+        return NotImplemented
+
+    @abstractmethod
+    def match_rules(self, rules: [FeatureRule]) -> bool:
+        return NotImplemented
+
+    @property
+    @abstractmethod
+    def cur_scene(self) -> SceneBase:
+        return NotImplemented
 
 
 class TaskBase(metaclass=ABCMeta):
@@ -7,5 +23,5 @@ class TaskBase(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def run(self, w: cadria.wnd):
-        pass
+    def run(self, w: TaskWnd):
+        return NotImplemented

@@ -17,22 +17,23 @@ class FeatureRule:
     # shared resources
     _res = dict()
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str, threshold: float = 0.8):
         self._file_name = filename
+        self._threshold = threshold
         if filename not in FeatureRule._res:
             file_path = opath.join(_dir, filename)
             file_path = opath.abspath(file_path)
             img = cv2.imread(file_path)
             FeatureRule._res[filename] = img
 
-    def match(self, img) -> bool:
-        """符合特徵
+    def get_loc_1st(self, img):
+        """取得符合特徵的位置(第 1 個點), 沒符合則回傳 None
 
         Arguments:
             img {array or image} -- 來源圖(screen)
 
         Returns:
-            bool
+            tuple[int, int]
         """
         screen_image: Iterable
         if isinstance(img, Iterable):
@@ -43,9 +44,24 @@ class FeatureRule:
 
         result = cv2.matchTemplate(
             screen_image, find_image, cv2.TM_CCOEFF_NORMED)
-        threshold = 0.9
+        threshold = self._threshold
         loc1, loc2 = np.where(result >= threshold)
         if len(loc1) > 0:
+            return (loc1[0], loc2[0])
+        else:
+            return None
+
+    def match(self, img) -> bool:
+        """符合特徵
+
+        Arguments:
+            img {array or image} -- 來源圖(screen)
+
+        Returns:
+            bool
+        """
+        loc = self.get_loc_1st(img)
+        if loc:
             return True
         else:
             return False

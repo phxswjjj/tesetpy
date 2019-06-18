@@ -1,6 +1,7 @@
 import time
 
-from .scene import SceneBase, FeatureRule
+from .scene import FeatureRule, SceneBase
+from .task import TaskWnd
 from .win32 import wnd as wnd32
 
 
@@ -15,7 +16,7 @@ class WarProduceMode:
     HARD = 1
 
 
-class wnd(wnd32):
+class wnd(wnd32, TaskWnd):
     __defaultsize = (1606, 925)
 
     def __init__(self):
@@ -106,9 +107,15 @@ class wnd(wnd32):
         rx, ry = (1430, 140)
         self.click_l(rx, ry)
 
-    def match(self, s: SceneBase) -> bool:
+    def is_scene(self, cls: SceneBase) -> bool:
+        s = self.cur_scene
+        if s and isinstance(s, cls):
+            return True
+        else:
+            return False
+
+    def match_rules(self, rules: [FeatureRule]) -> bool:
         """全部特徵都滿足才算符合"""
-        rules: [FeatureRule] = s.feature_rules()
         if not rules:
             return False
 
@@ -119,9 +126,14 @@ class wnd(wnd32):
 
         return True
 
+    def match(self, s: SceneBase) -> bool:
+        """全部特徵都滿足才算符合"""
+        rules: [FeatureRule] = s.feature_rules()
+        return self.match_rules(rules)
+
     def identify_scene(self) -> bool:
         """辨識場景
-        
+
         Returns:
             [bool] -- true=場景變換
         """
@@ -143,5 +155,5 @@ class wnd(wnd32):
         return not scene_org or not self.cur_scene or scene_org.__class__.__name__ != self._cur_scene.__class__.__name__
 
     @property
-    def cur_scene(self):
+    def cur_scene(self) -> SceneBase:
         return self._cur_scene
