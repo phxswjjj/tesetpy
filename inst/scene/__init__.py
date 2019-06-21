@@ -5,8 +5,6 @@ from os import path as opath
 import cv2
 import numpy as np
 
-from ..win32 import wcolor, wpos
-
 _dir = 'inst/scene/img'
 
 
@@ -26,7 +24,7 @@ class FeatureRule:
             img = cv2.imread(file_path)
             FeatureRule._res[filename] = img
 
-    def get_loc_1st(self, img):
+    def get_loc_1st(self, img) -> tuple:
         """取得符合特徵的位置(第 1 個點), 沒符合則回傳 None
 
         Arguments:
@@ -51,6 +49,24 @@ class FeatureRule:
         else:
             return None
 
+    def get_loc_center(self, img) -> tuple:
+        """取得符合特徵的位置(中心點), 沒符合則回傳 None
+
+        Arguments:
+            img {array or image} -- 來源圖(screen)
+
+        Returns:
+            tuple[int, int]
+        """
+        loc = self.get_loc_1st(img)
+        loc_center = None
+
+        if loc and len(self.image) > 0:
+            height, width, channels = self.image.shape
+            loc_center = (loc[0] + width // 2, loc[1] + height // 2)
+
+        return loc_center
+
     def match(self, img) -> bool:
         """符合特徵
 
@@ -71,7 +87,12 @@ class FeatureRule:
         return self._file_name
 
     @property
-    def image(self):
+    def image(self) -> np.ndarray:
+        """特徵圖
+        
+        Returns:
+            numpy.ndarray
+        """
         return FeatureRule._res[self._file_name]
 
 
