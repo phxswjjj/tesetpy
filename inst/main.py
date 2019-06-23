@@ -1,12 +1,15 @@
+import math
 import time
 
 import keyboard
+from pymouse import PyMouse
 
 from .cadria import wnd
+from .scene.forces import (ForcesWarExecStep1, ForcesWarExecStep2,
+                           ForcesWarQueue)
 from .scene.pub import Pub
 from .scene.shop import Shop
-from .scene.forces import ForcesWarQueue, ForcesWarExecStep1, ForcesWarExecStep2
-from .task import task_war
+from .task import task_shop, task_war
 
 
 def main():
@@ -15,7 +18,8 @@ def main():
 
     tasks = [
         task_war.TaskWarFight(),
-        task_war.TaskWarProduce()
+        task_war.TaskWarProduce(),
+        task_shop.TaskCollectResource()
     ]
 
     w = wnd()
@@ -23,9 +27,22 @@ def main():
         print('cadria load fail')
         return
 
+    mouse = PyMouse()
     while True:
-        if w.identify_scene():
-            print(w.cur_scene.__class__.__name__)
+        # 電腦操作中暫停執行
+        p1 = mouse.position()
+        time.sleep(1)
+        p2 = mouse.position()
+        dist = math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+        if dist > 10:
+            print('電腦操作中暫停執行', dist)
+            time.sleep(600)
+            continue
+        
+        for task in tasks:
+            if w.identify_scene():
+                print(w.cur_scene.__class__.__name__)
+            task.run(w)
         time.sleep(2)
 
 
