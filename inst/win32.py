@@ -1,5 +1,7 @@
 import collections
+import time
 
+import numpy as np
 import win32con
 import win32gui
 from PIL import ImageGrab
@@ -8,8 +10,10 @@ from pymouse import PyMouse
 
 from .types import ITuple
 
+
 def _itr_to_tup(itr: collections.Iterable, mul: int):
     return tuple(mul * i for i in itr)
+
 
 class wpos(ITuple):
     """座標位置(x, y)"""
@@ -356,7 +360,7 @@ class wnd:
             rect = bbox
         else:
             rect = self.rect
-        
+
         self.image = ImageGrab.grab(rect)
         return self.image
 
@@ -373,7 +377,7 @@ class wnd:
             if not self.image:
                 self.grab()
             im = self.image
-        
+
         return wcolor(*im.getpixel(p.totup()))
 
     def focus(self):
@@ -402,6 +406,23 @@ class wnd:
 
     def tap(self, c, n=1):
         self.k.tap_key(c, n)
+
+    def mouse_move(self, from_rloc: tuple, to_rloc: tuple, rate: int = 1000):
+        src_rpos: tuple[int, int] = from_rloc
+        dest_rpos: tuple[int, int] = to_rloc
+        if not src_rpos:
+            src_rpos = self.m.position()
+
+        src_pos = self.abspos(*src_rpos)
+        dest_pos = self.abspos(*dest_rpos)
+
+        npoints = int(
+            np.sqrt((dest_pos[0]-src_pos[0])**2 + (dest_pos[1]-src_pos[1])**2) / (rate/1000))
+        for i in range(npoints):
+            x = int(src_pos[0] + ((dest_pos[0]-src_pos[0])/npoints)*i)
+            y = int(src_pos[1] + ((dest_pos[1]-src_pos[1])/npoints)*i)
+            self.m.move(x, y)
+            time.sleep(0.001)
 
     def minimize(self):
         hwnd = self.hwnd

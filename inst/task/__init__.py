@@ -17,6 +17,10 @@ class TaskWnd(metaclass=ABCMeta):
     def cur_scene(self) -> SceneBase:
         return NotImplemented
 
+    @abstractmethod
+    def mouse_move(self, from_rloc: tuple, to_rloc: tuple, rate: int = 1000):
+        return NotImplemented
+
 
 class TaskBase(metaclass=ABCMeta):
     def __init__(self):
