@@ -18,6 +18,7 @@ class FeatureRule:
     def __init__(self, filename: str, threshold: float = 0.8):
         self._file_name = filename
         self._threshold = threshold
+        self._loc_last_result: tuple = None
         if filename not in FeatureRule._res:
             file_path = opath.join(_dir, filename)
             file_path = opath.abspath(file_path)
@@ -42,10 +43,11 @@ class FeatureRule:
 
         result = cv2.matchTemplate(
             screen_image, find_image, cv2.TM_CCOEFF_NORMED)
-        threshold = self._threshold
-        loc1, loc2 = np.where(result >= threshold)
-        if len(loc1) > 0:
-            return (loc1[0], loc2[0])
+
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+        if max_val >= self._threshold and len(max_loc) > 0:
+            self._loc_last_result = max_loc
+            return max_loc
         else:
             return None
 
@@ -65,6 +67,7 @@ class FeatureRule:
             height, width, channels = self.image.shape
             loc_center = (loc[0] + width // 2, loc[1] + height // 2)
 
+        self._loc_last_result = loc_center
         return loc_center
 
     def match(self, img) -> bool:
@@ -76,7 +79,8 @@ class FeatureRule:
         Returns:
             bool
         """
-        loc = self.get_loc_1st(img)
+        loc = self.get_loc_center(img)
+        self._loc_last_result = loc
         if loc:
             return True
         else:
@@ -89,11 +93,15 @@ class FeatureRule:
     @property
     def image(self) -> np.ndarray:
         """特徵圖
-        
+
         Returns:
             numpy.ndarray
         """
         return FeatureRule._res[self._file_name]
+
+    @property
+    def loc_last_result(self) -> tuple:
+        return self._loc_last_result
 
 
 class SceneBase(metaclass=ABCMeta):
