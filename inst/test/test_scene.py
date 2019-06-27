@@ -1,9 +1,12 @@
 import cv2
 
 from inst.scene import FeatureRule, SceneBase
+from inst.scene.forces import (ForcesWarExec, ForcesWarExecStep1,
+                               ForcesWarExecStep2, ForcesWarQueue)
 from inst.scene.pub import Pub
 from inst.scene.shop import Shop
-from inst.scene.forces import ForcesWarQueue, ForcesWarExec, ForcesWarExecStep1, ForcesWarExecStep2
+
+from . import match
 
 shop_img = cv2.imread('inst/scene/img/test_shop.jpg')
 pub_img = cv2.imread('inst/scene/img/test_pub.jpg')
@@ -13,15 +16,9 @@ forceswar_exec2_img = cv2.imread('inst/scene/img/test_forceswar_exec2.jpg')
 
 
 def _match(s: SceneBase, screen_img) -> bool:
-    rules = s.feature_rules()
-    if not rules:
-        return False
+    rules: [FeatureRule] = s.feature_rules()
+    return match(rules, screen_img)
 
-    for rule in rules:
-        rule: FeatureRule
-        if not rule.match(screen_img):
-            return False
-    return True
 
 def test_scenebase():
     subclasses: [SceneBase] = SceneBase.all_subclasses()
@@ -31,6 +28,7 @@ def test_scenebase():
     assert ForcesWarExec not in subclasses
     assert ForcesWarExecStep1 in subclasses
     assert ForcesWarExecStep2 in subclasses
+
 
 def test_shop():
     shop = Shop()
