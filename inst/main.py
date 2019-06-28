@@ -9,7 +9,7 @@ from .scene.forces import (ForcesWarExecStep1, ForcesWarExecStep2,
                            ForcesWarQueue)
 from .scene.pub import Pub
 from .scene.shop import Shop
-from .task import task_shop, task_war
+from .task import task_other, task_shop, task_war
 
 
 def main():
@@ -19,7 +19,8 @@ def main():
     tasks = [
         task_war.TaskWarFight(),
         task_war.TaskWarProduce(),
-        task_shop.TaskCollectResource()
+        task_shop.TaskCollectResource(),
+        task_other.TaskReconnect()
     ]
 
     w = wnd()
@@ -38,7 +39,7 @@ def main():
             print('電腦操作中暫停執行', dist)
             time.sleep(600)
             continue
-        
+
         for task in tasks:
             if w.identify_scene():
                 print(w.cur_scene.__class__.__name__)

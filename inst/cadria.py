@@ -40,6 +40,9 @@ class wnd(wnd32, TaskWnd):
         ry = int(round(ry * sizeratio[1]))
         super().click(rx, ry, button, n)
 
+    def mouse_left_click(self, rloc: tuple, times: int = 1):
+        self.click(*rloc, n=times)
+
     def warEnter(self):
         rx, ry = (440, 750)
         self.click_l(rx, ry)
