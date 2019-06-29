@@ -43,7 +43,9 @@ class wnd(wnd32, TaskWnd):
                     loc = rule.loc_last_result
                     self.mouse_left_click(loc)
                     time.sleep(1)
-                    return self.identify_scene()
+                    # 有切換場景，重新再進來
+                    if self.identify_scene():
+                        return True
                 
         return False
 
