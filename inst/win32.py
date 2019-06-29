@@ -392,6 +392,10 @@ class wnd:
             if(not win32gui.IsIconic(hwnd)):
                 win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
             win32gui.ShowWindow(hwnd, win32con.SW_SHOWNORMAL)
+            
+        # 重新取得視窗位置
+        rect = win32gui.GetWindowRect(hwnd)
+        self.rect = rect
 
     def abspos(self, x, y):
         rect = self.rect
