@@ -18,3 +18,6 @@ class Pub(SceneBase):
     def fetch_scene_paths(self, cls: 'SceneBase') -> [FeatureRule]:
         if cls == Shop:
             yield FeatureRule('shop_icon.jpg')
+        
+        # default
+        yield FeatureRule('shop_icon.jpg')
