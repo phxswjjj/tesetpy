@@ -34,6 +34,19 @@ class wnd(wnd32, TaskWnd):
         self.sizeratio = (size[0] / defaultsize[0], size[1] / defaultsize[1])
         return True
 
+    def switch_scene_to(self, cls: SceneBase) -> bool:
+        if self._cur_scene:
+            for rule in self._cur_scene.fetch_scene_paths(cls):
+                rule: FeatureRule
+                if rule.match(self.image):
+                    print('switch scene...', cls.__name__)
+                    loc = rule.loc_last_result
+                    self.mouse_left_click(loc)
+                    time.sleep(1)
+                    return self.identify_scene()
+                
+        return False
+
     def click(self, rx, ry, button=1, n=1):
         sizeratio = self.sizeratio
         rx = int(round(rx * sizeratio[0]))

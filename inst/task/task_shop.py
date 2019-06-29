@@ -15,7 +15,17 @@ class TaskCollectResource(TaskBase):
             dif: timedelta = datetime.now() - self._last_run_time
             if dif < timedelta(0, 30*60, 0):
                 return
+        
+        self._go_shop(w)
 
+        self._collect_res(w)
+
+    def _go_shop(self, w: TaskWnd):
+        if not w.is_scene(Shop):
+            while w.switch_scene_to(Shop):
+                pass
+
+    def _collect_res(self, w: TaskWnd):
         if w.is_scene(Shop):
             self._last_run_time = datetime.now()
             rule_stone = FeatureRule('shop_res_stone.jpg', 0.9)

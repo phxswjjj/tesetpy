@@ -109,6 +109,18 @@ class SceneBase(metaclass=ABCMeta):
     def feature_rules(self) -> [FeatureRule]:
         return NotImplemented
 
+    def fetch_scene_paths(self, cls: 'SceneBase') -> [FeatureRule]:
+        """定義要至目標場景可走的路徑
+
+        Arguments:
+            cls {SceneBase} -- 目標場景
+
+        Returns:
+            [FeatureRule] -- 路徑特徵
+        """
+        return
+        yield
+
     @classmethod
     def all_subclasses(cls):
         subclasses: [SceneBase] = []

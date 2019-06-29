@@ -1,4 +1,5 @@
-from . import SceneBase, FeatureRule
+from . import FeatureRule, SceneBase
+from .shop import Shop
 
 
 class Pub(SceneBase):
@@ -13,3 +14,7 @@ class Pub(SceneBase):
         rules.append(FeatureRule('shop_icon.jpg'))
 
         return rules
+
+    def fetch_scene_paths(self, cls: 'SceneBase') -> [FeatureRule]:
+        if cls == Shop:
+            yield FeatureRule('shop_icon.jpg')

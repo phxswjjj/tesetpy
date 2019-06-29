@@ -41,6 +41,9 @@ def test_pub():
     assert _match(pub, pub_img)
     assert not _match(pub, shop_img)
 
+    rule_back_shop = FeatureRule('shop_icon.jpg')
+    assert rule_back_shop.match(pub_img)
+
 
 def test_forceswar():
     war_queue = ForcesWarQueue()
