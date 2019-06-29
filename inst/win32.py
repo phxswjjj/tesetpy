@@ -339,6 +339,8 @@ class wnd:
         find window by title, calculate window rect and size
         '''
         hwnd = win32gui.FindWindow(None, wintitle)
+        if not hwnd:
+            return
         self.hwnd = hwnd
 
         # 最小化會無法取得 window rect
