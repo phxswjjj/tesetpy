@@ -18,10 +18,35 @@ class TaskReconnect(TaskBase):
                 w.mouse_left_click(loc_reconnect)
 
                 sleep_sec: int = 10
-                if not self._last_run_time:
+                if self._last_run_time:
                     dif: timedelta = datetime.now() - self._last_run_time
                     # 10 min 內又斷線，等 30 min 再試
                     if dif < timedelta(0, 10*60, 0):
                         sleep_sec = 30*60
                 self._last_run_time = datetime.now()
                 time.sleep(sleep_sec)
+
+
+class TaskSelectServer(TaskBase):
+    def __init__(self):
+        self._last_run_time: datetime = None
+
+    def run(self, w: TaskWnd):
+        if self._last_run_time:
+            dif: timedelta = datetime.now() - self._last_run_time
+            # 2 hr 內不重試，可能伺服器維修
+            if dif < timedelta(0, 2*60*60, 0):
+                return
+
+        if not w.cur_scene:
+            rule_enter = FeatureRule('select_server_enter.jpg', 0.9)
+            if w.match_rules([rule_enter]):
+                self._last_run_time = datetime.now()
+                loc = rule_enter.loc_last_result
+                w.mouse_left_click(loc)
+                time.sleep(2)
+
+                # close ad
+        else:
+            # 有其他場景視為已執行過
+            self._last_run_time = datetime.now()

@@ -1,4 +1,5 @@
 import math
+import os
 import time
 
 import keyboard
@@ -20,12 +21,24 @@ def main():
         task_war.TaskWarFight(),
         task_war.TaskWarProduce(),
         task_shop.TaskCollectResource(),
-        task_other.TaskReconnect()
+        task_other.TaskReconnect(),
+        task_other.TaskSelectServer()
     ]
 
     w = wnd()
     if not w.load():
-        print('cadria load fail')
+        os.startfile('steam://rungameid/883860')
+        time.sleep(2)
+        
+    for i in range(10):
+        if not w.load():
+            print('cadria load fail, retry({})...'.format(i))
+            time.sleep(2)
+        else:
+            break
+
+    if not w.load():
+        print('cadria load fail, exit...')
         return
 
     mouse = PyMouse()
