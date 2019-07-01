@@ -11,8 +11,8 @@ from . import match
 shop_img = cv2.imread('inst/scene/img/test_shop.jpg')
 pub_img = cv2.imread('inst/scene/img/test_pub.jpg')
 forceswar_queue_img = cv2.imread('inst/scene/img/test_forceswar_queue.jpg')
-forceswar_exec_img = cv2.imread('inst/scene/img/test_forceswar_exec.jpg')
-forceswar_exec2_img = cv2.imread('inst/scene/img/test_forceswar_exec2.jpg')
+forceswar_exec_img = cv2.imread('inst/scene/img/test_warstep1_prod.jpg')
+forceswar_exec2_img = cv2.imread('inst/scene/img/test_warstep2_fight.jpg')
 
 
 def _match(s: SceneBase, screen_img) -> bool:
