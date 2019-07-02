@@ -23,6 +23,6 @@ def test_collect_res():
     assert not match([rule_stone, rule_magic], pub_img)
 
 def test_item_completed():
-    rule_item_completed = FeatureRule('item_completed.jpg', 0.95)
+    rule_item_completed = FeatureRule('shop_item_completed.jpg', 0.95)
     assert not rule_item_completed.match(shop_img)
     assert rule_item_completed.match(shop2_img)
