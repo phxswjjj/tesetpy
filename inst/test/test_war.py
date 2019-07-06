@@ -44,6 +44,10 @@ def test_warstep2():
     rule_war_completed = FeatureRule('warstep_completed.jpg')
     assert not rule_war_completed.match(warstep2_fight_img)
     assert not rule_war_completed.match(warstep2_fight2_img)
+
+    rule_select_hard = FeatureRule('warstep2_select_hard.jpg')
+    assert rule_select_hard.match(warstep2_fight_img)
+    assert not rule_select_hard.match(warstep2_fight2_img)
     
     rule_select_role = FeatureRule('select_role.jpg', 0.9)
     assert rule_select_role.match(warstep2_select_img)
