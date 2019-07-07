@@ -14,6 +14,8 @@ warstep2_fight2_img = cv2.imread('inst/scene/img/test_warstep2_fight2.jpg')
 warstep2_select_img = cv2.imread('inst/scene/img/test_warstep2_select.jpg')
 warstep2_select2_img = cv2.imread('inst/scene/img/test_warstep2_select2.jpg')
 warstep2_select3_img = cv2.imread('inst/scene/img/test_warstep2_select3.jpg')
+warstep2_return_img = cv2.imread('inst/scene/img/test_warstep2_return.jpg')
+select_role_img = cv2.imread('inst/scene/img/test_select_role.jpg')
 
 
 def test_war_time():
@@ -48,9 +50,26 @@ def test_warstep2():
     rule_select_hard = FeatureRule('warstep2_select_hard.jpg')
     assert rule_select_hard.match(warstep2_fight_img)
     assert not rule_select_hard.match(warstep2_fight2_img)
+
+    rule_select_role_hard = FeatureRule('warstep2_select_role_hard.jpg')
+    assert rule_select_role_hard.match(warstep2_select_img)
+    assert rule_select_role_hard.match(warstep2_return_img)
+    assert not rule_select_role_hard.match(select_role_img)
+
+    rule_go = FeatureRule('warstep2_go.jpg')
+    assert rule_go.match(warstep2_select_img)
+    assert rule_go.match(warstep2_select2_img)
+    assert rule_go.match(select_role_img)
+    assert not rule_go.match(warstep2_return_img)
     
     rule_select_role = FeatureRule('select_role.jpg', 0.9)
     assert rule_select_role.match(warstep2_select_img)
     assert rule_select_role.match(warstep2_select3_img)
     assert not rule_select_role.match(warstep2_select2_img)
     assert not rule_select_role.match(warstep2_fight_img)
+
+    rule_power40 = FeatureRule('select_role_power40.jpg', 0.95)
+    assert not rule_power40.match(warstep2_select_img)
+    assert not rule_power40.match(warstep2_select3_img)
+    assert rule_power40.match(warstep2_select2_img)
+    assert not rule_power40.match(warstep2_fight_img)
