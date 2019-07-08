@@ -3,12 +3,16 @@ from datetime import datetime
 import cv2
 
 from inst.scene import FeatureRule
-from inst.task.task_war import WarStepType, get_warstep
+from inst.task.task_war import (TaskWarFight, TaskWarProduce, WarStepType,
+                                get_warstep)
 
 warstep1_prod_img = cv2.imread('inst/scene/img/test_warstep1_prod.jpg')
 warstep1_prod2_img = cv2.imread('inst/scene/img/test_warstep1_prod2.jpg')
 warstep1_prod3_img = cv2.imread('inst/scene/img/test_warstep1_prod3.jpg')
 warstep1_prod4_img = cv2.imread('inst/scene/img/test_warstep1_prod4.jpg')
+warstep1_prod5_img = cv2.imread('inst/scene/img/test_warstep1_prod5.jpg')
+warstep1_prod6_img = cv2.imread('inst/scene/img/test_warstep1_prod6.jpg')
+warstep1_prod7_img = cv2.imread('inst/scene/img/test_warstep1_prod7.jpg')
 warstep2_fight_img = cv2.imread('inst/scene/img/test_warstep2_fight.jpg')
 warstep2_fight2_img = cv2.imread('inst/scene/img/test_warstep2_fight2.jpg')
 warstep2_select_img = cv2.imread('inst/scene/img/test_warstep2_select.jpg')
@@ -24,6 +28,8 @@ def test_war_time():
 
 
 def test_warstep1():
+    task = TaskWarProduce()
+
     rule_expand = FeatureRule('warstep_expand_building.jpg')
     assert not rule_expand.match(warstep1_prod_img)
     assert rule_expand.match(warstep1_prod2_img)
@@ -37,13 +43,33 @@ def test_warstep1():
     assert not rule_item_empty.match(warstep1_prod3_img)
     assert rule_item_empty.match(warstep1_prod4_img)
 
-    rule_war_completed = FeatureRule('warstep_completed.jpg')
+    rule_build = FeatureRule('warstep1_build.jpg')
+    assert rule_build.match(warstep1_prod2_img)
+    assert not rule_build.match(warstep1_prod3_img)
+
+    rule_collect_res = FeatureRule('warstep1_collect_res.jpg')
+    assert not rule_collect_res.match(warstep1_prod2_img)
+    assert rule_collect_res.match(warstep1_prod6_img)
+    
+    rule_build2 = FeatureRule('warstep1_build2.jpg')
+    assert not rule_build2.match(warstep1_prod2_img)
+    assert rule_build2.match(warstep1_prod6_img)
+
+    rule_submit = FeatureRule('warstep1_submit.jpg')
+    assert not rule_submit.match(warstep1_prod2_img)
+    assert rule_submit.match(warstep1_prod7_img)
+
+    rule_war_completed = task.get_rule_warstep_completed()
     assert rule_war_completed.match(warstep1_prod_img)
     assert rule_war_completed.match(warstep1_prod2_img)
+    assert not rule_war_completed.match(warstep1_prod5_img)
+    assert rule_war_completed.match(warstep1_prod6_img)
 
 
 def test_warstep2():
-    rule_war_completed = FeatureRule('warstep_completed.jpg')
+    task = TaskWarFight()
+
+    rule_war_completed = task.get_rule_warstep_completed()
     assert not rule_war_completed.match(warstep2_fight_img)
     assert not rule_war_completed.match(warstep2_fight2_img)
 
@@ -61,7 +87,7 @@ def test_warstep2():
     assert rule_go.match(warstep2_select2_img)
     assert rule_go.match(select_role_img)
     assert not rule_go.match(warstep2_return_img)
-    
+
     rule_select_role = FeatureRule('select_role.jpg', 0.9)
     assert rule_select_role.match(warstep2_select_img)
     assert rule_select_role.match(warstep2_select3_img)
@@ -73,3 +99,7 @@ def test_warstep2():
     assert not rule_power40.match(warstep2_select3_img)
     assert rule_power40.match(warstep2_select2_img)
     assert not rule_power40.match(warstep2_fight_img)
+
+    rule_wait_return = task.get_rule_wait_return()
+    assert rule_wait_return.match(warstep2_fight2_img)
+    assert not rule_wait_return.match(warstep1_prod2_img)
