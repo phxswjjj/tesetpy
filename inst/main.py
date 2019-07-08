@@ -51,6 +51,7 @@ def main():
         if dist > 10:
             print('電腦操作中暫停執行', dist)
             time.sleep(600)
+            print('從暫停恢復執行')
             continue
 
         for task in tasks:
