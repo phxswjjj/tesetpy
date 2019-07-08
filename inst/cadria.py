@@ -46,7 +46,7 @@ class wnd(wnd32, TaskWnd):
                     # 有切換場景，重新再進來
                     if self.identify_scene():
                         return True
-                
+
         return False
 
     def click(self, rx, ry, button=1, n=1):
@@ -57,6 +57,9 @@ class wnd(wnd32, TaskWnd):
 
     def mouse_left_click(self, rloc: tuple, times: int = 1):
         self.click(*rloc, n=times)
+
+    def key_press(self, keycode):
+        self.tap(keycode)
 
     def warEnter(self):
         rx, ry = (440, 750)
@@ -171,6 +174,12 @@ class wnd(wnd32, TaskWnd):
         if not scene_org and not self.cur_scene:
             return False
         return not scene_org or not self.cur_scene or scene_org.__class__.__name__ != self._cur_scene.__class__.__name__
+
+    def refresh_screen(self):
+        self.grab()
+
+    def refresh_scene(self):
+        self.identify_scene()
 
     @property
     def cur_scene(self) -> SceneBase:
