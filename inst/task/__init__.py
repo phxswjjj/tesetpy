@@ -29,6 +29,18 @@ class TaskWnd(metaclass=ABCMeta):
     def mouse_left_click(self, rloc: tuple, times: int = 1):
         return NotImplemented
 
+    @abstractmethod
+    def key_press(self, keycode):
+        return NotImplemented
+
+    @abstractmethod
+    def refresh_screen(self):
+        return NotImplemented
+
+    @abstractmethod
+    def refresh_scene(self):
+        return NotImplemented
+
 
 class TaskBase(metaclass=ABCMeta):
     def __init__(self):
