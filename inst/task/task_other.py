@@ -44,9 +44,14 @@ class TaskSelectServer(TaskBase):
                 self._last_run_time = datetime.now()
                 loc = rule_enter.loc_last_result
                 w.mouse_left_click(loc)
-                time.sleep(2)
+                time.sleep(5)
 
                 # close ad
+                w.refresh_screen()
+                rule_close = FeatureRule('shop_close.jpg')
+                if w.match_rules([rule_close]):
+                    w.mouse_left_click(rule_close.loc_last_result)
+                    time.sleep(0.5)
         else:
             # 有其他場景視為已執行過
             self._last_run_time = datetime.now()
