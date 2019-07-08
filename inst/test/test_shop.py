@@ -6,7 +6,13 @@ from . import match
 
 shop_img = cv2.imread('inst/scene/img/test_shop.jpg')
 shop2_img = cv2.imread('inst/scene/img/test_shop2.jpg')
+shop_ad_img = cv2.imread('inst/scene/img/test_shop_ad.jpg')
 pub_img = cv2.imread('inst/scene/img/test_pub.jpg')
+
+def test_shop_ad():
+    rule_close = FeatureRule('shop_close.jpg')
+    assert rule_close.match(shop_ad_img)
+    assert not rule_close.match(shop_img)
 
 def test_collect_res():
     rule_stone = FeatureRule('shop_res_stone.jpg', 0.95)
