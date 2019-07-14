@@ -15,10 +15,11 @@ class FeatureRule:
     # shared resources
     _res = dict()
 
-    def __init__(self, filename: str, threshold: float = 0.8):
+    def __init__(self, filename: str, threshold: float = 0.8, debug: bool = False):
         self._file_name = filename
         self._threshold = threshold
         self._loc_last_result: tuple = None
+        self._debug = debug
         if filename not in FeatureRule._res:
             file_path = opath.join(_dir, filename)
             file_path = opath.abspath(file_path)
@@ -45,6 +46,8 @@ class FeatureRule:
             screen_image, find_image, cv2.TM_CCOEFF_NORMED)
 
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+        if self._debug:
+            print('max_val', max_val, 'max_loc', max_loc)
         if max_val >= self._threshold and len(max_loc) > 0:
             self._loc_last_result = max_loc
             return max_loc
