@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 from enum import Enum, unique
 
 from ..scene import FeatureRule
-from ..scene.forces import ForcesWarExecStep1, ForcesWarExecStep2
+from ..scene.forces import (ForcesWarExecStep1, ForcesWarExecStep2,
+                            ForcesWarQueue)
 from . import TaskBase, TaskWnd
 
 # 第一次進行戰爭籌備時間(參考基準)
@@ -73,6 +74,12 @@ class TaskWarFight(TaskWarBase):
 
     def _go_war(self, w: TaskWnd):
         super()._go_war(w)
+        if w.is_scene(ForcesWarQueue):
+            rule_start = FeatureRule('warstep2_start.jpg')
+            if w.match_rules([rule_start]):
+                w.mouse_left_click(rule_start.loc_last_result)
+                time.sleep(0.5)
+                w.refresh_scene()
 
     def _fight(self, w: TaskWnd):
         if w.is_scene(ForcesWarExecStep2):
@@ -87,6 +94,7 @@ class TaskWarFight(TaskWarBase):
             if w.match_rules([rule_select_hard]):
                 w.mouse_left_click(rule_select_hard.loc_last_result)
                 time.sleep(0.5)
+                w.refresh_screen()
 
             # 選擇角色出戰
             rule_select_role_hard = FeatureRule(
@@ -95,13 +103,13 @@ class TaskWarFight(TaskWarBase):
             if w.match_rules([rule_select_role_hard, rule_go]):
                 # 選擇隊伍
                 rule_select_role = FeatureRule('select_role.jpg', 0.9)
-                rule_power40 = FeatureRule('select_role_power40.jpg', 0.95)
+                rule_power40 = FeatureRule('select_role_power40.jpg', 0.9)
                 for i in range(8):
                     select_group_key = i + 1
                     w.key_press(str(i))
                     time.sleep(0.5)
-
                     w.refresh_screen()
+
                     if not w.match_rules([rule_select_role]) and w.match_rules([rule_power40, rule_go]):
                         w.mouse_left_click(rule_go.loc_last_result)
                         self._last_run_time = datetime.now()
@@ -113,7 +121,28 @@ class TaskWarFight(TaskWarBase):
                 self._wait_time = datetime.now() + timedelta(0, 10*60)
                 return
             else:
-                pass
+                rule_return = FeatureRule('warstep2_return.jpg')
+                if w.match_rules([rule_return]):
+                    w.mouse_left_click(rule_return.loc_last_result)
+                    time.sleep(0.5)
+                    
+                    for _ in range(2):
+                        w.key_press('f')
+                        time.sleep(0.3)
+                    
+                    w.refresh_screen()
+                    rule_repair = FeatureRule('warstep2_submit.jpg')
+                    if w.match_rules([rule_repair]):
+                        w.mouse_left_click(rule_repair.loc_last_result)
+                        time.sleep(0.3)
+                        w.refresh_screen()
+
+                    rule_close = FeatureRule('warstep2_close.jpg')
+                    if w.match_rules([rule_close]):
+                        w.mouse_left_click(rule_close.loc_last_result)
+                        time.sleep(0.5)
+                    else:
+                        print('not found close')
 
     def get_rule_wait_return(self) -> FeatureRule:
         return FeatureRule('warstep2_wait_return.jpg')
@@ -135,10 +164,12 @@ class TaskWarProduce(TaskWarBase):
     def _produce(self, w: TaskWnd):
         if w.is_scene(ForcesWarExecStep1):
             # 壽備結束
+            ''' 容易誤判，先取消
             rule_war_completed = self.get_rule_warstep_completed()
             if w.match_rules([rule_war_completed]):
                 self._wait_time = datetime.now() + timedelta(1)
                 return
+            '''
 
             rule_expand = FeatureRule('warstep_expand_building.jpg')
             if w.match_rules([rule_expand]):
@@ -149,19 +180,31 @@ class TaskWarProduce(TaskWarBase):
 
             # 收成
             rule_item_completed = FeatureRule('warstep1_item_completed.jpg')
+            rule_item_upgrade_exit = FeatureRule('warstep1_upgrade_exit.jpg')
             for i in range(6):
                 if w.match_rules([rule_item_completed]):
                     w.mouse_left_click(rule_item_completed.loc_last_result)
                     time.sleep(0.5)
                     w.refresh_screen()
+                    if w.match_rules([rule_item_upgrade_exit]):
+                        w.mouse_left_click(
+                            rule_item_upgrade_exit.loc_last_result)
+                        time.sleep(0.3)
+                        w.refresh_screen()
 
             # 提交
             rule_submit = FeatureRule('warstep1_submit.jpg')
+            rule_submit_check = FeatureRule('warstep1_submit_check.jpg')
+            rule_submit2 = FeatureRule('warstep1_submit2.jpg')
             for i in range(3):
                 if w.match_rules([rule_submit]):
                     w.mouse_left_click(rule_submit.loc_last_result)
                     time.sleep(0.5)
                     w.refresh_screen()
+                    if w.match_rules([rule_submit_check, rule_submit2]):
+                        w.mouse_left_click(rule_submit2.loc_last_result)
+                        time.sleep(0.3)
+                        w.refresh_screen()
 
             # 建造
             rule_item_empty = FeatureRule('warstep_item_empty.jpg')
