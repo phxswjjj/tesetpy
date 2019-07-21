@@ -50,7 +50,7 @@ class TaskWarBase(TaskBase, metaclass=ABCMeta):
         Returns:
             FeatureRule -- [description]
         """
-        return FeatureRule('warstep_completed.jpg', 0.98)
+        return FeatureRule('warstep_completed.jpg', 0.99)
 
 
 class TaskWarFight(TaskWarBase):
