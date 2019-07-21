@@ -16,6 +16,7 @@ class TaskCollectResource(TaskBase):
             if dif < timedelta(0, 30*60, 0):
                 return
         
+        w.refresh_scene()
         self._go_shop(w)
 
         self._collect_res(w)

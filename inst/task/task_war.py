@@ -45,6 +45,11 @@ class TaskWarBase(TaskBase, metaclass=ABCMeta):
         pass
 
     def get_rule_warstep_completed(self) -> FeatureRule:
+        """特徵-籌備/戰鬥達到目標
+        
+        Returns:
+            FeatureRule -- [description]
+        """
         return FeatureRule('warstep_completed.jpg', 0.98)
 
 
@@ -69,6 +74,7 @@ class TaskWarFight(TaskWarBase):
             else:
                 self._wait_time = None
 
+        w.refresh_scene()
         self._go_war(w)
         self._fight(w)
 
@@ -234,13 +240,11 @@ class TaskWarProduce(TaskWarBase):
 
     def _produce(self, w: TaskWnd):
         if w.is_scene(ForcesWarExecStep1):
-            # 壽備結束
-            ''' 容易誤判，先取消
+            # 籌備結束
             rule_war_completed = self.get_rule_warstep_completed()
             if w.match_rules([rule_war_completed]):
                 self._wait_time = datetime.now() + timedelta(1)
                 return
-            '''
 
             rule_expand = self.get_rule_expand_building()
             if w.match_rules([rule_expand]):

@@ -48,17 +48,15 @@ def main():
         time.sleep(1)
         p2 = mouse.position()
         dist = math.hypot(p2[0] - p1[0], p2[1] - p1[1])
-        if dist > 10:
+        if dist > 10 and False:
             print('電腦操作中暫停執行', dist)
             time.sleep(600)
             print('從暫停恢復執行')
             continue
 
         for task in tasks:
-            if w.identify_scene():
-                print(w.cur_scene.__class__.__name__)
             task.run(w)
-        time.sleep(2)
+        time.sleep(10)
 
 
 def stop_task():

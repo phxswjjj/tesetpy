@@ -80,7 +80,7 @@ def test_warstep1():
     assert rule_war_completed.match(warstep1_prod_img)
     assert rule_war_completed.match(warstep1_prod2_img)
     assert not rule_war_completed.match(warstep1_prod5_img)
-    assert rule_war_completed.match(warstep1_prod6_img)
+    assert not rule_war_completed.match(warstep1_prod6_img)
 
 
 def test_warstep2():
@@ -91,7 +91,7 @@ def test_warstep2():
     assert not rule_start.match(warstep2_fight_img)
 
     rule_war_completed = task.get_rule_warstep_completed()
-    assert not rule_war_completed.match(warstep2_fight_img)
+    assert rule_war_completed.match(warstep2_fight_img)
     assert not rule_war_completed.match(warstep2_fight2_img)
 
     rule_select_hard = task.get_rule_select_hardmode()
