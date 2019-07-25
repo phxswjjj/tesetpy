@@ -50,7 +50,7 @@ class TaskWarBase(TaskBase, metaclass=ABCMeta):
         Returns:
             FeatureRule -- [description]
         """
-        return FeatureRule('warstep_completed.jpg', 0.99)
+        return FeatureRule('warstep_completed.jpg', 0.993, True)
 
 
 class TaskWarFight(TaskWarBase):
@@ -297,6 +297,13 @@ class TaskWarProduce(TaskWarBase):
                         w.mouse_left_click(rule_build2.loc_last_result)
                         time.sleep(0.5)
                         w.refresh_screen()
+                    else:
+                        rule_build_cancel = self.get_rule_build_cancel()
+                        rule_build_nores = self.get_rule_build_nores()
+                        if w.match_rules([rule_build_cancel, rule_build_nores]):
+                            w.mouse_left_click(rule_build_cancel.loc_last_result)
+                            self._wait_time = datetime.now() + timedelta(0, 5*60)
+                            return
 
     def get_rule_expand_building(self) -> FeatureRule:
         """特徵-展開製作中的道具列表
@@ -353,6 +360,22 @@ class TaskWarProduce(TaskWarBase):
             FeatureRule -- [description]
         """
         return FeatureRule('warstep1_build2.jpg')
+
+    def get_rule_build_nores(self) -> FeatureRule:
+        """特徵-無資源改用鑽石製作
+        
+        Returns:
+            FeatureRule -- [description]
+        """
+        return FeatureRule('warstep1_build_nores.jpg')
+
+    def get_rule_build_cancel(self) -> FeatureRule:
+        """特徵-取消執行道具製作
+        
+        Returns:
+            FeatureRule -- [description]
+        """
+        return FeatureRule('warstep1_build_cancel.jpg')
 
     def get_rule_item_submit(self) -> FeatureRule:
         """特徵-提交道具

@@ -15,6 +15,8 @@ warstep1_prod6_img = cv2.imread('inst/scene/img/test_warstep1_prod6.jpg')
 warstep1_prod7_img = cv2.imread('inst/scene/img/test_warstep1_prod7.jpg')
 warstep1_prod8_img = cv2.imread('inst/scene/img/test_warstep1_prod8.jpg')
 warstep1_prod9_img = cv2.imread('inst/scene/img/test_warstep1_prod9.jpg')
+warstep1_prod10_img = cv2.imread('inst/scene/img/test_warstep1_prod10.jpg')
+warstep1_prod11_img = cv2.imread('inst/scene/img/test_warstep1_prod11.jpg')
 warstep2_start_img = cv2.imread('inst/scene/img/test_warstep2_start.jpg')
 warstep2_fight_img = cv2.imread('inst/scene/img/test_warstep2_fight.jpg')
 warstep2_fight2_img = cv2.imread('inst/scene/img/test_warstep2_fight2.jpg')
@@ -76,11 +78,20 @@ def test_warstep1():
     assert not rule_submit2.match(warstep1_prod2_img)
     assert rule_submit2.match(warstep1_prod9_img)
 
+    rule_nores = task.get_rule_build_nores()
+    assert not rule_nores.match(warstep1_prod9_img)
+    assert rule_nores.match(warstep1_prod11_img)
+
+    rule_build_cancel = task.get_rule_build_cancel()
+    assert not rule_build_cancel.match(warstep1_prod9_img)
+    assert rule_build_cancel.match(warstep1_prod11_img)
+
     rule_war_completed = task.get_rule_warstep_completed()
     assert rule_war_completed.match(warstep1_prod_img)
     assert rule_war_completed.match(warstep1_prod2_img)
     assert not rule_war_completed.match(warstep1_prod5_img)
     assert not rule_war_completed.match(warstep1_prod6_img)
+    assert not rule_war_completed.match(warstep1_prod10_img)
 
 
 def test_warstep2():
