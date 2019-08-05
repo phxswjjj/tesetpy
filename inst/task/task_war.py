@@ -50,7 +50,7 @@ class TaskWarBase(TaskBase, metaclass=ABCMeta):
         Returns:
             FeatureRule -- [description]
         """
-        return FeatureRule('warstep_completed.jpg', 0.993, True)
+        return FeatureRule('warstep_completed.jpg', 0.993)
 
 
 class TaskWarFight(TaskWarBase):
@@ -289,7 +289,7 @@ class TaskWarProduce(TaskWarBase):
             for i in range(6):
                 if w.match_rules([rule_item_empty, rule_build]):
                     w.mouse_left_click(rule_build.loc_last_result)
-                    time.sleep(0.5)
+                    time.sleep(0.2)
                     w.refresh_screen()
                     if w.match_rules([rule_collect_res, rule_build2]):
                         w.mouse_left_click(rule_collect_res.loc_last_result)
